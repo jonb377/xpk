@@ -37,6 +37,7 @@ import os
 import random
 import re
 import string
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -2114,7 +2115,7 @@ def get_main_container(args, system, docker_image, command, resource_type) -> st
                 - bash
                 - -c
                 - |
-                  echo XPK Start: $(date) ; {command} ; EXIT_CODE=$? ; echo XPK End: $(date); echo EXIT_CODE=$EXIT_CODE ; sleep 5; exit $EXIT_CODE
+                  echo XPK Start: $(date) ; bash -c {command} ; EXIT_CODE=$? ; echo XPK End: $(date); echo EXIT_CODE=$EXIT_CODE ; sleep 5; exit $EXIT_CODE
                 resources:
                   limits:
                     {resource_type}: {system.chips_per_vm}
@@ -2123,7 +2124,7 @@ def get_main_container(args, system, docker_image, command, resource_type) -> st
                    system=system,
                    jax_coordinator_port=add_jax_coordinator_port(system),
                    docker_image=docker_image,
-                   command=command,
+                   command=shlex.quote(command),
                    resource_type=resource_type)
 
 def add_jax_coordinator_port(system):
